@@ -1,0 +1,227 @@
+/* Sidebar Styles */
+.sidebar {
+    width: 250px;
+    background: #AD8B73;
+    color: white;
+    transition: width 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 100;
+}
+
+.sidebar.collapsed {
+    width: 60px;
+}
+
+.sidebar-header {
+    padding: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    background: #8C6B58;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-header {
+    padding: 20px 10px;
+}
+
+.sidebar.collapsed .header-text {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.sidebar.collapsed .header-icon {
+    opacity: 1;
+    visibility: visible;
+}
+
+.header-icon {
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.header-text {
+    transition: all 0.3s ease;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex: 1;
+}
+
+.sidebar ul li {
+    position: relative;
+}
+
+.sidebar ul li a {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sidebar ul li a:hover {
+    background: #CEAB93;
+    transform: translateX(2px);
+}
+
+.sidebar ul li.active a {
+    background: #E4CAA5;
+    color: #333;
+    font-weight: bold;
+}
+
+.sidebar ul li a i {
+    margin-right: 12px;
+    width: 20px;
+    text-align: center;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.sidebar.collapsed ul li a {
+    padding: 15px;
+    justify-content: center;
+}
+
+.sidebar.collapsed ul li a i {
+    margin-right: 0;
+}
+
+.sidebar.collapsed ul li a .menu-text {
+    opacity: 0;
+    visibility: hidden;
+    width: 0;
+}
+
+.menu-text {
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.tooltip {
+    position: absolute;
+    left: 70px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #333;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.tooltip::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 4px solid transparent;
+    border-right-color: #333;
+}
+
+.sidebar.collapsed ul li:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+.toggle-btn {
+    background: #8C6B58;
+    border: none;
+    color: white;
+    padding: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: 1px solid #AD8B73;
+}
+
+.toggle-btn:hover {
+    background: #CEAB93;
+}
+
+.toggle-btn i {
+    transition: transform 0.3s ease;
+    margin-right: 8px;
+}
+
+.sidebar.collapsed .toggle-btn i {
+    margin-right: 0;
+}
+
+.sidebar.collapsed .toggle-text {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.toggle-text {
+    transition: all 0.3s ease;
+}
+
+/* Push content right */
+.content {
+    margin-left: 250px;
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+}
+
+.sidebar.collapsed ~ .content {
+    margin-left: 60px;
+}
+
+/* Recommendation styles (append to sidebar.css) */
+.rec-pill {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 14px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.rec-review { background: #e05757; }   /* needs review / low */
+.rec-practice { background: #f0a500; }  /* practice / mid */
+.rec-mastered { background: #2ea44f; }  /* mastered / high */
+.rec-help { background: #7b61ff; }      /* needs help (many attempts) */
+
+.recommendation-text {
+  font-size: 13px;
+  margin-top: 6px;
+  color: #333;
+}
+
+/* Overall recommendation card */
+#overallRecommendation {
+  background: #fff8e6;
+  border: 1px solid #e6d7c1;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+#overallRecommendation strong { display:block; margin-bottom:6px; }

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Learning Progress Tracker</title>
+    <link rel="stylesheet" href="sidebar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FFFBE9;
+            color: #3a3a3a;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #AD8B73;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            padding: 20px;
+            max-width: 900px;
+            margin: auto;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #CEAB93;
+        }
+        button {
+            background-color: #CEAB93;
+            color: #fff;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #E4CAA5;
+        }
+        #summary {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #E4CAA5;
+            border-radius: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #CEAB93;
+            text-align: center;
+        }
+        th {
+            background-color: #AD8B73;
+            color: white;
+        }
+        .progress-bar-container {
+            background-color: #E4CAA5;
+            border-radius: 8px;
+            height: 18px;
+            width: 100%;
+            position: relative;
+        }
+        .progress-bar {
+            background-color: #AD8B73;
+            height: 100%;
+            border-radius: 8px;
+            text-align: right;
+            padding-right: 5px;
+            color: white;
+            font-weight: bold;
+        }
+        @media (max-width: 600px) {
+            table, th, td {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+          <span class="header-text">Menu</span>
+          <i class="fas fa-bars header-icon"></i>
+      </div>
+      <ul>
+          <li> <a href="#" onclick="setActive(this)"> <i class="fas fa-brain"></i> <span class="menu-text">AI QnA Tutor</span> </a> <div class="tooltip">AI QnA Tutor</div> </li> <li> <a href="#" onclick="setActive(this)"> <i class="fas fa-file-text"></i> <span class="menu-text">Simplified Notes & Summaries</span> </a> <div class="tooltip">Simplified Notes & Summaries</div> </li> <li> <a href="#" onclick="setActive(this)"> <i class="fas fa-comments"></i> <span class="menu-text">Interactive Chat History</span> </a> <div class="tooltip">Interactive Chat History</div> </li> <li class="active"> <a href="#" onclick="setActive(this)"> <i class="fas fa-chart-line"></i> <span class="menu-text">Learning Progress Tracker</span> </a> <div class="tooltip">Learning Progress Tracker</div> </li> <li> <a href="#" onclick="setActive(this)"> <i class="fas fa-search"></i> <span class="menu-text">Knowledge Search (OpenSearch + Bedrock)</span> </a> <div class="tooltip">Knowledge Search (OpenSearch + Bedrock)</div> </li>
+      </ul>
+      <button class="toggle-btn" onclick="toggleSidebar()">
+          <i class="fas fa-chevron-left" id="toggle-icon"></i>
+          <span class="toggle-text">Collapse</span>
+      </button>
+  </div>
+  <div class="content">
+    <header>
+        <h1>Learning Progress Tracker</h1>
+        <p>Progress and tools will appear here.</p>
+    </header>
+
+    <div class="container">
+        <label for="userId">Enter UserID:</label>
+        <input type="text" id="userId" placeholder="e.g., student123">
+        <button id="loadBtn" style="opacity:0">Load Dashboard</button>
+
+        <!-- Overall recommendation -->
+        <div id="overallRecommendation" style="display:none"></div>
+        <div>
+          <h2>Topics Progress</h2>
+          <table id="progressTable">
+              <thead>
+                  <tr>
+                      <th>Topic</th>
+                      <th>Completed Modules</th>
+                      <th>Progress</th>
+                      <th>Recommendation</th>
+                      <th>Last Accessed</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <!-- Data injected here -->
+              </tbody>
+          </table>
+        </div>
+        <div>
+          <h2>Progress Chart</h2>
+          <canvas id="progressChart"></canvas>
+        </div>
+    </div>
+  </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+    <script>
+       function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const toggleIcon = document.getElementById('toggle-icon');
+        sidebar.classList.toggle('collapsed');
+        toggleIcon.classList.toggle('fa-chevron-left');
+        toggleIcon.classList.toggle('fa-chevron-right');
+      }
+
+      function setActive(link) {
+        document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
+        link.parentElement.classList.add('active');
+      }
+    </script>
+</body>
+</html>
