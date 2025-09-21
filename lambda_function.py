@@ -1,9 +1,14 @@
 import boto3
 import json
 import os
+from datetime import datetime
 
 # Initialize Bedrock Runtime client
 bedrock = boto3.client("bedrock-runtime", region_name="us-east-1")
+
+# Initialize DynamoDB
+dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
+table = dynamodb.Table("ChatHistory")
 
 def lambda_handler(event, context):
     try:
@@ -22,7 +27,7 @@ def lambda_handler(event, context):
         body = json.loads(event.get("body", "{}"))
         question = body.get("question", "Hello!")
 
-        # Build Bedrock request (for Nova or Llama chat)
+        # Build Bedrock request
         payload = {
             "messages": [
                 {
@@ -38,10 +43,9 @@ def lambda_handler(event, context):
             }
         }
 
-
         # Call Bedrock
         response = bedrock.invoke_model(
-            modelId="amazon.nova-pro-v1:0",  # Or swap to "meta.llama3-8b-instruct-v1:0"
+            modelId="amazon.nova-pro-v1:0",
             body=json.dumps(payload),
             contentType="application/json",
             accept="application/json"
@@ -50,6 +54,19 @@ def lambda_handler(event, context):
         # Decode response
         result = json.loads(response["body"].read())
         answer = result["output"]["message"]["content"][0]["text"]
+
+        # ✅ Save to DynamoDB
+        timestamp = datetime.utcnow().isoformat()
+        user_id = "abudhabi"  # temporary, can replace with real auth user ID later
+
+        table.put_item(
+            Item={
+                "user_id": user_id,     # Partition key
+                "timestamp": timestamp, # Sort key, now a String
+                "question": question,
+                "answer": answer
+            }
+        )
 
         return {
             "statusCode": 200,
