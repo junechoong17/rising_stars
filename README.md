@@ -19,7 +19,7 @@ An inclusive AI-driven learning platform that simplifies complex topics and supp
 ## 🛠️ Branches
 Each feature is developed in its own branch and deployed to AWS Amplify:
 
-- `knowledge-search` → Knowledge search interface  
-- `ai-qna-tutor` → Conversational tutor powered by AI  
-- `summarise-and-simplify` → Text summarisation and simplification tool  
-- `learning-progress-tracker` → Personalized progress tracking dashboard  
+- `Knowledge_search` → Knowledge search interface  
+- `AI_QnA_tutor` → Conversational tutor powered by AI  
+- `Summarise_and_Simplify` → Text summarisation and simplification tool  
+- `Learning_progress_tracker` → Personalized progress tracking dashboard  
