@@ -324,104 +324,98 @@
     </div>
   </div>
 
-  <script>
-  const API_URL = "https://w6qwcb75ag.execute-api.us-east-1.amazonaws.com/Rising_Stars_Deploy/AIQnATutor";
-  // let session_id = null; // store session id for ongoing chat
+    <script>
+        const API_URL = "https://w6qwcb75ag.execute-api.us-east-1.amazonaws.com/Rising_Stars_Deploy/AIQnATutor";
 
-  function addMessage(text, sender) {
-    const chatBox = document.getElementById("chatBox");
-    const msg = document.createElement("div");
-    msg.classList.add("message", sender === "user" ? "user-message" : "bot-message");
-    msg.innerText = text;
-    chatBox.appendChild(msg);
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
+        // Generate session_id once per page load
+        let session_id = generateSessionId();
 
-  async function sendMessage() {
-    const input = document.getElementById("userInput");
-    const question = input.value.trim();
-    if (!question) return;
-
-    // Show user message
-    addMessage(question, "user");
-    input.value = "";
-
-    // Call API
-    try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ question /*, session_id */})
-      });
-      const data = await response.json();
-
-      // Save session ID if present
-      /*
-      if (!session_id && data.session_id) {
-          session_id = data.session_id; // save session id
+        function generateSessionId() {
+            return 'sess-' + Math.random().toString(36).substr(2, 9) + Date.now();
         }
-      */
 
-      // Show AI response
-      if (data.answer) {
-        addMessage(data.answer, "bot");
-      } else {
-        addMessage("⚠️ No response from server", "bot");
-      }
-    } catch (err) {
-      addMessage("❌ Error: " + err.message, "bot");
-    }
-  }
+        function addMessage(text, sender) {
+            const chatBox = document.getElementById("chatBox");
+            const msg = document.createElement("div");
+            msg.classList.add("message", sender === "user" ? "user-message" : "bot-message");
+            msg.innerText = text;
+            chatBox.appendChild(msg);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
 
-  // ✅ Add Enter key trigger
-  document.getElementById("userInput").addEventListener("keydown", function (event) {
-    if (event.key === "Enter") {
-      event.preventDefault(); // Prevents form submit if inside <form>
-      sendMessage();
-    }
-  });
+        async function sendMessage() {
+            const input = document.getElementById("userInput");
+            const question = input.value.trim();
+            if (!question) return;
 
-  // Sidebar toggle
-    function toggleSidebar() {
-      document.getElementById("sidebar").classList.toggle("collapsed");
-    }
+            // Show user message
+            addMessage(question, "user");
+            input.value = "";
 
-    // new sidebar toggle with icon change
-    function toggleSidebar() {
+            try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: {
+                "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                question,
+                session_id   // ✅ send session_id with request
+                })
+            });
+
+            const data = await response.json();
+
+            // Show AI response
+            if (data.answer) {
+                addMessage(data.answer, "bot");
+            } else {
+                addMessage("⚠️ No response from server", "bot");
+            }
+            } catch (err) {
+            addMessage("❌ Error: " + err.message, "bot");
+            }
+        }
+
+        // ✅ Add Enter key trigger
+        document.getElementById("userInput").addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+            event.preventDefault();
+            sendMessage();
+            }
+        });
+
+        // Sidebar toggle
+        function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const toggleIcon = document.getElementById('toggle-icon');
             
             sidebar.classList.toggle('collapsed');
             
             if (sidebar.classList.contains('collapsed')) {
-                toggleIcon.classList.remove('fa-chevron-left');
-                toggleIcon.classList.add('fa-bars');
+            toggleIcon.classList.remove('fa-chevron-left');
+            toggleIcon.classList.add('fa-bars');
             } else {
-                toggleIcon.classList.remove('fa-bars');
-                toggleIcon.classList.add('fa-chevron-left');
+            toggleIcon.classList.remove('fa-bars');
+            toggleIcon.classList.add('fa-chevron-left');
             }
         }
 
         function setActive(element) {
-            // Remove active class from all items
             document.querySelectorAll('.sidebar ul li').forEach(item => {
-                item.classList.remove('active');
+            item.classList.remove('active');
             });
-            
-            // Add active class to clicked item
             element.parentElement.classList.add('active');
         }
 
-        // Add smooth scrolling and initial animations
         document.addEventListener('DOMContentLoaded', function() {
             const menuItems = document.querySelectorAll('.sidebar ul li');
             menuItems.forEach((item, index) => {
-                item.style.animationDelay = `${index * 0.1}s`;
+            item.style.animationDelay = `${index * 0.1}s`;
             });
         });
-</script>
+    </script>
+
 
 </body>
 </html>
