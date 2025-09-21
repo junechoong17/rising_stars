@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Knowledge Search</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      background: #FFFBE9;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background-color: #AD8B73;
+      color: white;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar-header {
+      padding: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      flex: 1;
+    }
+    .sidebar ul li {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .sidebar ul li a {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      color: white;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .sidebar ul li a:hover,
+    .sidebar ul li.active a {
+      background: #8C6A54;
+    }
+    .sidebar ul li i {
+      margin-right: 10px;
+    }
+    .toggle-btn {
+      background: #8C6A54;
+      border: none;
+      padding: 10px;
+      color: white;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    /* Main container */
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border-left: 2px solid #CEAB93;
+      background-color: #E4CAA5;
+    }
+    header {
+      background-color: #AD8B73;
+      padding: 20px;
+      color: white;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    main#chat-container {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .message {
+      padding: 10px 15px;
+      border-radius: 15px;
+      max-width: 80%;
+    }
+    .user {
+      background-color: #CEAB93;
+      align-self: flex-end;
+      color: #333;
+    }
+    .bot {
+      background-color: #AD8B73;
+      color: white;
+      align-self: flex-start;
+    }
+
+    mark {
+    background-color: #E4CAA5; /* light brown */
+    color: #000; /* keep text black for readability */
+    padding: 0 2px;
+    border-radius: 3px;
+    }
+
+
+    /* Upload + input area */
+    #upload-area {
+      padding: 10px;
+      border-top: 1px solid #CEAB93;
+      background: #FFFBE9;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    #input-area {
+      display: flex;
+      padding: 10px;
+      background-color: #FFFBE9;
+      border-top: 1px solid #CEAB93;
+      gap: 10px;
+    }
+    #user-input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #CEAB93;
+      border-radius: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #AD8B73;
+      color: white;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #CEAB93;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="header-text">Menu</span>
+      <i class="fas fa-bars header-icon"></i>
+    </div>
+    <ul>
+      <li class="active">
+        <a href="#"><i class="fas fa-brain"></i><span class="menu-text">AI QnA Tutor</span></a>
+      </li>
+      <li>
+        <a href="#"><i class="fas fa-file-text"></i><span class="menu-text">Simplified Notes</span></a>
+      </li>
+      <li>
+        <a href="#"><i class="fas fa-comments"></i><span class="menu-text">Interactive Chat</span></a>
+      </li>
+      <li>
+        <a href="#"><i class="fas fa-chart-line"></i><span class="menu-text">Progress Tracker</span></a>
+      </li>
+      <li>
+        <a href="#"><i class="fas fa-search"></i><span class="menu-text">Knowledge Search</span></a>
+      </li>
+    </ul>
+    <button class="toggle-btn"><i class="fas fa-chevron-left" id="toggle-icon"></i> Collapse</button>
+  </div>
+
+  <!-- Main Chat Container -->
+  <div class="container">
+    <header>
+      <h1>Knowledge Chat</h1>
+    </header>
+
+    <main id="chat-container"></main>
+
+    <!-- Upload -->
+    <div id="upload-area">
+      <input type="file" id="file-upload" multiple>
+      <button onclick="uploadFiles()">Upload</button>
+    </div>
+
+    <!-- Chat Input -->
+    <div id="input-area">
+      <textarea id="user-input" placeholder="Type your question here..."></textarea>
+      <button onclick="askQuestion()">Send</button>
+    </div>
+  </div>
+
+  <script>
+  async function uploadFiles() {
+    const input = document.getElementById("file-upload");
+    if (input.files.length === 0) return alert("Please select a file.");
+
+    const formData = new FormData();
+    for (let file of input.files) {
+      formData.append("files", file);
+    }
+
+    try {
+      const res = await fetch("/upload_documents/", {
+        method: "POST",
+        body: formData
+      });
+      const data = await res.json();
+      alert(data.message || "Upload complete!");
+    } catch (err) {
+      console.error(err);
+      alert("Upload failed.");
+    }
+  }
+
+  async function askQuestion() {
+    const queryInput = document.getElementById("user-input");
+    const chatContainer = document.getElementById("chat-container");
+    const userMessage = queryInput.value.trim();
+    if (!userMessage) return;
+
+    const userDiv = document.createElement("div");
+    userDiv.className = "message user";
+    userDiv.innerText = userMessage;
+    chatContainer.appendChild(userDiv);
+
+    queryInput.value = "";
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+
+    try {
+      const response = await fetch(`/search/?query=${encodeURIComponent(userMessage)}`);
+      const data = await response.json();
+
+      if (data.results && data.results.length > 0) {
+        data.results.forEach(result => {
+          const botDiv = document.createElement("div");
+          botDiv.className = "message bot";
+          botDiv.innerHTML = `<strong>${result.title}</strong><br>${result.content}`;
+          chatContainer.appendChild(botDiv);
+        });
+      } else {
+        const botDiv = document.createElement("div");
+        botDiv.className = "message bot";
+        botDiv.innerText = "No results found.";
+        chatContainer.appendChild(botDiv);
+      }
+
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    } catch (error) {
+      console.error(error);
+      const botDiv = document.createElement("div");
+      botDiv.className = "message bot";
+      botDiv.innerText = "Error retrieving results.";
+      chatContainer.appendChild(botDiv);
+    }
+  }
+  </script>
+</body>
+</html>
