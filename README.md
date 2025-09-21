@@ -1,2 +1,6 @@
-# rising_stars
-This is an inclusive learning platform – AI-driven platform that simplifies complex topics and supports multiple learning formats (chat, sketching, videos, e-books), tailored to students of all backgrounds.
+# Knowledge Search 🔍
+This branch contains the **Knowledge Search** feature.  
+It enables students to quickly search across topics, resources, and references to enhance their learning experience.  
+
+## 🌐 Deployed Interface
+https://knowledge-search.d11ibj8ssi4xlx.amplifyapp.com/knowledge_search
