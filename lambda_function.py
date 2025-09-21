@@ -26,6 +26,7 @@ def lambda_handler(event, context):
         # Parse body from API Gateway event
         body = json.loads(event.get("body", "{}"))
         question = body.get("question", "Hello!")
+        session_id = body.get("session_id")  # ✅ frontend must send this
 
         # Build Bedrock request
         payload = {
@@ -55,14 +56,15 @@ def lambda_handler(event, context):
         result = json.loads(response["body"].read())
         answer = result["output"]["message"]["content"][0]["text"]
 
-        # ✅ Save to DynamoDB
+        # ✅ Save to DynamoDB with session_id
         timestamp = datetime.utcnow().isoformat()
         user_id = "abudhabi"  # temporary, can replace with real auth user ID later
 
         table.put_item(
             Item={
                 "user_id": user_id,     # Partition key
-                "timestamp": timestamp, # Sort key, now a String
+                "timestamp": timestamp, # Sort key (String)
+                "session_id": session_id,  # ✅ store session_id
                 "question": question,
                 "answer": answer
             }
@@ -76,7 +78,10 @@ def lambda_handler(event, context):
                 "Access-Control-Allow-Methods": "OPTIONS,POST",
                 "Access-Control-Allow-Headers": "Content-Type,Authorization"
             },
-            "body": json.dumps({"answer": answer})
+            "body": json.dumps({
+                "answer": answer,
+                "session_id": session_id  # ✅ return back, in case frontend needs it
+            })
         }
 
     except Exception as e:
