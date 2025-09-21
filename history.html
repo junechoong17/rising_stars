@@ -1,0 +1,215 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Simplified Notes & Summaries</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* ===== Sidebar ===== */
+    .sidebar {
+        width: 250px;
+        background: #AD8B73;
+        color: white;
+        transition: width 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0; bottom: 0; left: 0;
+        z-index: 100;
+    }
+    .sidebar.collapsed { width: 60px; }
+    .sidebar-header { padding: 20px; font-size: 18px; font-weight: bold; background: #8C6B58; text-align: center; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+    .sidebar.collapsed .sidebar-header { padding: 20px 10px; }
+    .sidebar.collapsed .header-text { opacity: 0; visibility: hidden; }
+    .header-icon { opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+    .header-text { transition: all 0.3s ease; }
+    .sidebar ul { list-style: none; padding: 0; margin: 0; flex: 1; }
+    .sidebar ul li a { display: flex; align-items: center; padding: 15px 20px; color: white; text-decoration: none; cursor: pointer; transition: all 0.2s ease; border-radius: 0; }
+    .sidebar ul li a:hover { background: #CEAB93; transform: translateX(2px); }
+    .sidebar ul li.active a { background: #E4CAA5; color: #333; font-weight: bold; }
+    .sidebar ul li a i { margin-right: 12px; width: 20px; text-align: center; font-size: 16px; transition: all 0.3s ease; }
+    .sidebar.collapsed ul li a { padding: 15px; justify-content: center; }
+    .sidebar.collapsed ul li a i { margin-right: 0; }
+    .sidebar.collapsed ul li a .menu-text { opacity: 0; visibility: hidden; width: 0; }
+    .menu-text { transition: all 0.3s ease; font-size: 14px; line-height: 1.4; }
+    .tooltip { position: absolute; left: 70px; top: 50%; transform: translateY(-50%); background: #333; color: white; padding: 8px 12px; border-radius: 6px; font-size: 13px; white-space: nowrap; opacity: 0; visibility: hidden; transition: all 0.2s ease; z-index: 1000; pointer-events: none; }
+    .tooltip::before { content: ''; position: absolute; left: -4px; top: 50%; transform: translateY(-50%); border: 4px solid transparent; border-right-color: #333; }
+    .sidebar.collapsed ul li:hover .tooltip { opacity: 1; visibility: visible; }
+    .toggle-btn { background: #8C6B58; border: none; color: white; padding: 12px; cursor: pointer; font-size: 14px; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; border-top: 1px solid #AD8B73; }
+    .toggle-btn:hover { background: #CEAB93; }
+    .toggle-btn i { transition: transform 0.3s ease; margin-right: 8px; }
+    .sidebar.collapsed .toggle-btn i { margin-right: 0; }
+    .toggle-text { transition: all 0.3s ease; }
+    .sidebar.collapsed .toggle-text { opacity: 0; visibility: hidden; }
+
+    /* ===== Main Content ===== */
+    body { font-family: Arial, sans-serif; background-color: #FFFBE9; color: #3e2c26; margin: 0; padding: 0; }
+    .main-container { margin-left: 250px; padding: 20px; transition: margin-left 0.3s ease; }
+    .sidebar.collapsed ~ .main-container { margin-left: 60px; }
+
+    .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 20px 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    button { background-color: #AD8B73; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: background-color 0.3s ease; margin-bottom: 15px; }
+    button:hover { background-color: #8e6f5c; }
+    .card { border: 1px solid #CEAB93; border-radius: 10px; padding: 15px; margin-bottom: 15px; cursor: pointer; background-color: #E4CAA5; transition: transform 0.2s; }
+    .card:hover { transform: scale(1.02); }
+    .timestamp { font-size: 12px; color: #3e2c26; margin-bottom: 10px; }
+    .original-preview { font-size: 14px; color: #3e2c26; }
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+    .modal-content { background: #FFFBE9; padding: 20px; border-radius: 12px; max-width: 700px; max-height: 80%; overflow-y: auto; }
+    .close-btn { float: right; cursor: pointer; font-size: 18px; font-weight: bold; }
+    pre { white-space: pre-wrap; word-wrap: break-word; }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="header-text">Menu</span>
+      <i class="fas fa-bars header-icon"></i>
+    </div>
+    <ul>
+      <li>
+        <a href="index.html" onclick="setActive(this)">
+          <i class="fas fa-brain"></i>
+          <span class="menu-text">AI QnA Tutor</span>
+        </a>
+        <div class="tooltip">AI QnA Tutor</div>
+      </li>
+      <li class="active">
+        <a href="index.html" onclick="setActive(this)">
+          <i class="fas fa-file-text"></i>
+          <span class="menu-text">Simplified Notes & Summaries</span>
+        </a>
+        <div class="tooltip">Simplified Notes & Summaries</div>
+      </li>
+      <li>
+        <a href="#" onclick="setActive(this)">
+          <i class="fas fa-comments"></i>
+          <span class="menu-text">Interactive Chat History</span>
+        </a>
+        <div class="tooltip">Interactive Chat History</div>
+      </li>
+      <li>
+        <a href="#" onclick="setActive(this)">
+          <i class="fas fa-chart-line"></i>
+          <span class="menu-text">Learning Progress Tracker</span>
+        </a>
+        <div class="tooltip">Learning Progress Tracker</div>
+      </li>
+      <li>
+        <a href="#" onclick="setActive(this)">
+          <i class="fas fa-search"></i>
+          <span class="menu-text">Knowledge Search (OpenSearch + Bedrock)</span>
+        </a>
+        <div class="tooltip">Knowledge Search (OpenSearch + Bedrock)</div>
+      </li>
+    </ul>
+    <button class="toggle-btn" onclick="toggleSidebar()">
+      <i class="fas fa-chevron-left" id="toggle-icon"></i>
+      <span class="toggle-text">Collapse</span>
+    </button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-container">
+    <div class="container">
+      <button onclick="window.location='index.html'">Summarize Text</button>
+      <h2>History of Summaries</h2>
+      <div id="history">Loading history...</div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="closeModal">&times;</span>
+      <h3>Summary Details</h3>
+      <div><strong>Timestamp:</strong> <span id="modalTime"></span></div>
+      <h4>Original Text:</h4>
+      <pre id="modalOriginal">Loading...</pre>
+      <h4>Summarized Text:</h4>
+      <pre id="modalSimplified">Loading...</pre>
+    </div>
+  </div>
+
+  <script>
+    // Sidebar
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
+    function setActive(el) {
+      document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
+      el.parentElement.classList.add('active');
+    }
+
+    // History
+    const historyApi = "https://wxlrch2m52.execute-api.us-east-1.amazonaws.com/history";
+    const presignedApi = "https://wxlrch2m52.execute-api.us-east-1.amazonaws.com/presigned";
+    const userId = 'demo';
+    const historyDiv = document.getElementById('history');
+    const modal = document.getElementById('modal');
+    const closeModal = document.getElementById('closeModal');
+    const modalOriginal = document.getElementById('modalOriginal');
+    const modalSimplified = document.getElementById('modalSimplified');
+    const modalTime = document.getElementById('modalTime');
+
+    closeModal.onclick = () => modal.style.display = 'none';
+    window.onclick = (e) => { if(e.target == modal) modal.style.display = 'none'; }
+
+    async function loadHistory() {
+      historyDiv.textContent = "Loading history...";
+      try {
+        const r = await fetch(`${historyApi}?userId=${userId}`);
+        const data = await r.json();
+        const items = Array.isArray(data.items) ? data.items : (Array.isArray(data) ? data : []);
+        if (items.length === 0) { historyDiv.textContent = "No history yet."; return; }
+
+        const cards = await Promise.all(items.map(async item => {
+          const ts = new Date(item.timestamp).toLocaleString();
+          let originalText = "";
+          try {
+            const r2 = await fetch(`${presignedApi}?s3Key=${encodeURIComponent(item.s3Key)}`);
+            const url = await r2.text();
+            originalText = await fetch(url).then(res => res.text());
+          } catch(e) { originalText = "[Error loading original text]"; }
+
+          return `<div class="card" data-s3key="${item.s3Key}" data-simplified="${encodeURIComponent(item.simplified)}" data-timestamp="${ts}">
+                    <div class="timestamp">${ts}</div>
+                    <div class="original-preview">${originalText.slice(0,100).replace(/\n/g,' ')}...</div>
+                  </div>`;
+        }));
+
+        historyDiv.innerHTML = cards.join('');
+
+        document.querySelectorAll('.card').forEach(card => {
+          card.onclick = async () => {
+            const s3Key = card.dataset.s3key;
+            const simplified = decodeURIComponent(card.dataset.simplified);
+            const ts = card.dataset.timestamp;
+            modalTime.textContent = ts;
+            modalSimplified.textContent = simplified;
+            modalOriginal.textContent = "Loading...";
+            modal.style.display = 'flex';
+
+            try {
+                const r2 = await fetch(`${presignedApi}?s3Key=${encodeURIComponent(s3Key)}`);
+              const url = await r2.text();
+              const originalText = await fetch(url).then(res => res.text());
+              modalOriginal.textContent = originalText;
+            } catch(e) {
+              modalOriginal.textContent = "Error loading original text: " + e;
+            }
+          };
+        });
+
+      } catch(e) {
+        historyDiv.textContent = "Error loading history: " + e;
+      }
+    }
+
+    loadHistory();
+  </script>
+
+</body>
+</html>
+
